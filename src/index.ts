@@ -1,50 +1,63 @@
-import { ValtheraClass } from "@wxn0brp/db-core";
-import { minifyVQuery } from "./min";
-import { ValtheraCRDT } from "./types";
+import { ValtheraCompatible } from "@wxn0brp/db-core";
 import { rebuild } from "./rebuild";
-import { sync } from "./sync";
 import { makeSnapshot } from "./snapshot";
 import { collectionPrefix } from "./static";
-import { add } from "./utils";
+import { sync } from "./sync";
+import { ValtheraCRDT } from "./types";
 
-export function makeCRDT(_db: ValtheraClass): ValtheraCRDT {
-    const db = _db as ValtheraCRDT;
-    // @ts-ignore
-    const originalExecute = db.execute.bind(db);
-    db._original_execute = originalExecute;
+const proxyList = [
+    "add",
+    "update",
+    "updateOne",
+    "updateOneOrAdd",
+    "remove",
+    "removeOne",
+];
 
-    // @ts-ignore
-    db.execute = async function (...args: any[]) {
-        const op: string = args[0];
-        const result = await originalExecute(...args);
-        const collection = collectionPrefix + "/" + args[1].collection;
-        const opLow = op.toLowerCase();
+async function processOperation(target: ValtheraCRDT, op: string, result: any, args: any[]) {
+    const collection = collectionPrefix + "/" + args[0];
+    const opLow = op.toLowerCase();
 
-        if (opLow === "add") {
-            await add(db, collection, { a: result }, true);
-        } else if (!opLow.includes("find") && !opLow.includes("collection")) {
-            await add(db, collection, { d: minifyVQuery(args[1]), op }, true);    
+    if (opLow === "add") {
+        await target._target().add(collection, { a: result }, true);
+    } else if (!opLow.includes("find") && !opLow.includes("collection")) {
+        await target._target().add(collection, { d: args.slice(1), op }, true);  
+    }
+}
+
+export function crdtValthera(target: ValtheraCompatible): ValtheraCRDT {
+    const proxy = new Proxy(target, {
+        get(target, prop: string, receiver) {
+            const original = Reflect.get(target, prop, receiver);
+            if (proxyList.includes(prop) && typeof original === "function") {
+                return async function (...args: any[]) {
+                    const result = await original.apply(target, args);
+                    await processOperation(proxy, prop, result, args);
+                    return result;
+                };
+            }
+
+            return original;
+        },
+
+        set(target, prop: string, value, receiver) {
+            return Reflect.set(target, prop, value, receiver);
         }
+    }) as ValtheraCRDT;
 
-        return result;
+    proxy.rebuild = async (collection: string) => {
+        return await rebuild(proxy, collection);
     }
 
-    db.rebuild = async (collection: string) => {
-        return await rebuild(db, collection);
+    proxy.sync = async (other: ValtheraCRDT, collection: string, rebuild = false) => {
+        return await sync(proxy, other, collection, rebuild);
     }
 
-    db._getIds = async (collection: string) => {
-        const data = await db.find(collectionPrefix + "/" + collection, {}, {}, {}, { select: ["_id"] });
-        return data.map((d: any) => d._id);
+    proxy.makeSnapshot = async (collection: string) => {
+        return await makeSnapshot(proxy, collection);
     }
 
-    db.sync = async (other: ValtheraCRDT, collection: string, rebuild = false) => {
-        return await sync(db, other, collection, rebuild);
-    }
+    proxy._target = () => target;
 
-    db.makeSnapshot = async (collection: string) => {
-        return await makeSnapshot(db, collection);
-    }
-
-    return db;
+    return proxy;
 }

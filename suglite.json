@@ -1,8 +1,7 @@
 {
     "cmd": "yarn bun",
     "watch": [
-        "src",
-        "test.ts"
+        "src"
     ],
     "restart_cmd": "clear",
     "events": {

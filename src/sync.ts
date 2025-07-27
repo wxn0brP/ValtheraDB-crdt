@@ -1,17 +1,22 @@
 import { collectionPrefix } from "./static";
 import { ValtheraCRDT } from "./types";
-import { add } from "./utils";
+
+async function getIds(db: ValtheraCRDT, collection: string) {
+    const data = await db.find(collection, {}, {}, {}, { select: ["_id"] });
+    return data.map((d: any) => d._id);
+}
 
 export async function sync(my: ValtheraCRDT, other: ValtheraCRDT, collection: string, rebuild = false) {
-    const myIds = await my._getIds(collection);
-    const otherIds = await other._getIds(collection);
     const crdtCol = collectionPrefix + "/" + collection;
+    const myIds = await getIds(my, crdtCol);
+    const otherIds = await getIds(other, crdtCol);
 
     const missing = otherIds.filter(id => !myIds.includes(id));
 
     const getData = await other.find(crdtCol, { $in: { _id: missing } });
     for (const data of getData) {
-        await add(my, crdtCol, data);
+        await my._target().add(crdtCol, data, false);
     }
+    
     if (rebuild) await my.rebuild(collection);
 }
