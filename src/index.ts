@@ -1,30 +1,50 @@
-import { Valthera } from "@wxn0brp/db";
-import { makeCRDT } from "./db";
-import { copyFileSync, rmdirSync } from "fs";
+import { ValtheraClass } from "@wxn0brp/db-core";
+import { minifyVQuery } from "./min";
+import { ValtheraCRDT } from "./types";
+import { rebuild } from "./rebuild";
+import { sync } from "./sync";
+import { makeSnapshot } from "./snapshot";
+import { collectionPrefix } from "./static";
+import { add } from "./utils";
 
-rmdirSync("./data", { recursive: true });
-const db1 = makeCRDT(new Valthera("./data/1"));
-const db2 = makeCRDT(new Valthera("./data/2"));
-await db2.ensureCollection("users");
-await db2.ensureCollection("__vcrdt__/users");
+export function makeCRDT(_db: ValtheraClass): ValtheraCRDT {
+    const db = _db as ValtheraCRDT;
+    // @ts-ignore
+    const originalExecute = db.execute.bind(db);
+    db._original_execute = originalExecute;
 
-interface User {
-    name: string;
-    _id: string;
+    // @ts-ignore
+    db.execute = async function (...args: any[]) {
+        const op: string = args[0];
+        const result = await originalExecute(...args);
+        const collection = collectionPrefix + "/" + args[1].collection;
+        const opLow = op.toLowerCase();
+
+        if (opLow === "add") {
+            await add(db, collection, { a: result }, true);
+        } else if (!opLow.includes("find") && !opLow.includes("collection")) {
+            await add(db, collection, { d: minifyVQuery(args[1]), op }, true);    
+        }
+
+        return result;
+    }
+
+    db.rebuild = async (collection: string) => {
+        return await rebuild(db, collection);
+    }
+
+    db._getIds = async (collection: string) => {
+        const data = await db.find(collectionPrefix + "/" + collection, {}, {}, {}, { select: ["_id"] });
+        return data.map((d: any) => d._id);
+    }
+
+    db.sync = async (other: ValtheraCRDT, collection: string, rebuild = false) => {
+        return await sync(db, other, collection, rebuild);
+    }
+
+    db.makeSnapshot = async (collection: string) => {
+        return await makeSnapshot(db, collection);
+    }
+
+    return db;
 }
-
-const alice = await db1.add<User>("users", { name: "Alice" });
-const bob = await db1.add<User>("users", { name: "Bob" });
-
-await db1.updateOne("users", { _id: alice._id }, { last_name: "Smith" });
-
-copyFileSync("./data/1/__vcrdt__/users/1.db", "./data/2/__vcrdt__/users/1.db");
-copyFileSync("./data/1/users/1.db", "./data/2/users/1.db");
-
-await db1.updateOne("users", { _id: bob._id }, { last_name: "Lopez" });
-await db2.updateOne("users", { _id: alice._id }, { age: 22 });
-
-await db1.sync(db2, "users");
-await db2.sync(db1, "users");
-await db1.makeSnapshot("users");
-await db2.makeSnapshot("users");
