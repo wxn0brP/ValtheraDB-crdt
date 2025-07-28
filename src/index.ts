@@ -1,9 +1,10 @@
-import { ValtheraCompatible } from "@wxn0brp/db-core";
+import { ValtheraClass, ValtheraCompatible } from "@wxn0brp/db-core";
 import { rebuild } from "./rebuild";
 import { makeSnapshot } from "./snapshot";
 import { collectionPrefix } from "./static";
 import { sync } from "./sync";
 import { ValtheraCRDT } from "./types";
+import { UniversalEventEmitter } from "@wxn0brp/db-core/helpers/eventEmiter";
 
 const proxyList = [
     "add",
@@ -18,11 +19,14 @@ async function processOperation(target: ValtheraCRDT, op: string, result: any, a
     const collection = collectionPrefix + "/" + args[0];
     const opLow = op.toLowerCase();
 
+    let res: { _id: string } = null;
     if (opLow === "add") {
-        await target._target().add(collection, { a: result }, true);
+        res = await target._target().add<any>(collection, { a: result }, true);
     } else if (!opLow.includes("find") && !opLow.includes("collection")) {
-        await target._target().add(collection, { d: args.slice(1), op }, true);  
+        res = await target._target().add<any>(collection, { d: args.slice(1), op }, true);
     }
+
+    return res?._id || null;
 }
 
 export function crdtValthera(target: ValtheraCompatible): ValtheraCRDT {
@@ -32,7 +36,15 @@ export function crdtValthera(target: ValtheraCompatible): ValtheraCRDT {
             if (proxyList.includes(prop) && typeof original === "function") {
                 return async function (...args: any[]) {
                     const result = await original.apply(target, args);
-                    await processOperation(proxy, prop, result, args);
+
+                    const opId = await processOperation(proxy, prop, result, args);
+                    if ("emiter" in target && opId) {
+                        const emiter = target.emiter as UniversalEventEmitter;
+                        if (emiter instanceof UniversalEventEmitter) {
+                            emiter.emit("crdt", opId);
+                        }
+                    }
+                    
                     return result;
                 };
             }
@@ -60,4 +72,14 @@ export function crdtValthera(target: ValtheraCompatible): ValtheraCRDT {
     proxy._target = () => target;
 
     return proxy;
+}
+
+/**
+ * Sync a collection from my to other.
+ * @param my The target database that should be synced.
+ * @param other The source database that should be synced from.
+ * @param collection The collection to sync.
+ */
+export async function reverseSync(my: ValtheraCRDT, other: ValtheraCRDT, collection: string) {
+    return await sync(other, my, collection);
 }
