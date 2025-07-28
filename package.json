@@ -1,0 +1,33 @@
+{
+  "name": "@wxn0brp/db-crdt",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "description": "CRDT integration for @wxn0brp/db-core",
+  "author": "wxn0brP",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "@wxn0brp/db-core": ">=0.1.3",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@wxn0brp/db": "^0.30.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js",
+      "import": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js",
+      "import": "./dist/*.js"
+    }
+  }
+}
