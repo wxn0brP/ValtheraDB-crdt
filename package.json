@@ -1,0 +1,43 @@
+{
+  "name": "@wxn0brp/db-crdt",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "description": "CRDT integration for @wxn0brp/db-core",
+  "author": "wxn0brP",
+  "license": "MIT",
+  "type": "module",
+  "homepage": "https://github.com/wxn0brP/ValtheraDB-crdt",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wxn0brP/ValtheraDB-crdt.git"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "@wxn0brp/db": "^0.30.0",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.7.3"
+  },
+  "peerDependencies": {
+    "@wxn0brp/db-core": ">=0.1.5"
+  },
+  "peerDependenciesMeta": {
+    "@wxn0brp/db-core": {
+      "optional": false
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js",
+      "import": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js",
+      "import": "./dist/*.js"
+    }
+  }
+}
