@@ -7,7 +7,7 @@ This library provides a CRDT (Conflict-free Replicated Data Type) implementation
 ## Installation
 
 ```bash
-yarn add github:wxn0brP/ValtheraDB-crdt
+yarn add github:wxn0brP/ValtheraDB-crdt#dist
 ```
 
 ## Usage
