@@ -1,10 +1,10 @@
-import { ValtheraClass, ValtheraCompatible } from "@wxn0brp/db-core";
+import { ValtheraCompatible } from "@wxn0brp/db-core";
 import { rebuild } from "./rebuild";
 import { makeSnapshot } from "./snapshot";
 import { collectionPrefix } from "./static";
 import { sync } from "./sync";
 import { ValtheraCRDT } from "./types";
-import { UniversalEventEmitter } from "@wxn0brp/db-core/helpers/eventEmiter";
+import { VEE } from "@wxn0brp/event-emitter";
 
 const proxyList = [
     "add",
@@ -39,8 +39,8 @@ export function crdtValthera(target: ValtheraCompatible): ValtheraCRDT {
 
                     const opId = await processOperation(proxy, prop, result, args);
                     if ("emiter" in target && opId) {
-                        const emiter = target.emiter as UniversalEventEmitter;
-                        if (emiter instanceof UniversalEventEmitter) {
+                        const emiter = target.emiter as VEE;
+                        if (emiter instanceof VEE) {
                             emiter.emit("crdt", opId);
                         }
                     }
