@@ -7,16 +7,16 @@ This library provides a CRDT (Conflict-free Replicated Data Type) implementation
 ## Installation
 
 ```bash
-yarn add github:wxn0brP/ValtheraDB-crdt#dist
+npm i @wxn0brp/db-crdt
 ```
 
 ## Usage
 
 ```typescript
-import { crdtValthera } from "@wxn0brp/db-crdt";
+import { createCrdtValthera } from "@wxn0brp/db-crdt";
 import { Valthera } from "@wxn0brp/db";
 
-const db = crdtValthera(new Valthera("dir"));
+const db = createCrdtValthera(new Valthera("dir"));
 
 // All operations are now CRDT-enabled
 await db.add("my-collection", { name: "John Doe" });
@@ -24,9 +24,9 @@ await db.add("my-collection", { name: "John Doe" });
 
 ## API
 
-### `crdtValthera(target: ValtheraCompatible): ValtheraCRDT`
+### `createCrdtValthera(target: ValtheraCompatible): ValtheraCRDT`
 
-This is the main function that wraps a `@wxn0brp/db-core` compatible database instance and returns a `ValtheraCRDT` instance.
+This is the main function that wraps a any `ValtheraCompatible` instance and returns a `ValtheraCRDT` instance.
 
 ### `ValtheraCRDT`
 
@@ -43,3 +43,7 @@ Sync a collection from `my` to `other`.
 ## License
 
 This project is licensed under the MIT License.
+
+## Contributing
+
+Contributions are welcome!
