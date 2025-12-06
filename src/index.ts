@@ -13,6 +13,7 @@ const proxyList = [
     "updateOneOrAdd",
     "remove",
     "removeOne",
+    "toggleOne"
 ];
 
 async function processOperation(target: ValtheraCRDT, op: string, result: any, args: any[]) {
@@ -29,7 +30,7 @@ async function processOperation(target: ValtheraCRDT, op: string, result: any, a
     return res?._id || null;
 }
 
-export function crdtValthera(target: ValtheraCompatible): ValtheraCRDT {
+export function createCrdtValthera(target: ValtheraCompatible): ValtheraCRDT {
     const proxy = new Proxy(target, {
         get(target, prop: string, receiver) {
             const original = Reflect.get(target, prop, receiver);
@@ -44,7 +45,7 @@ export function crdtValthera(target: ValtheraCompatible): ValtheraCRDT {
                             emiter.emit("crdt", opId);
                         }
                     }
-                    
+
                     return result;
                 };
             }
