@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "description": "CRDT integration for @wxn0brp/db-core",
+    "description": "CRDT integration for ValtheraDB",
     "author": "wxn0brP",
     "license": "MIT",
     "type": "module",
