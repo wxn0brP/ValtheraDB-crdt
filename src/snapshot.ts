@@ -7,6 +7,6 @@ export async function makeSnapshot(db: ValtheraCRDT, collection: string) {
     await db._target().updateOneOrAdd(collectionPrefix, { _id: collection }, { time: Date.now() });
 
     for (const d of data) {
-        await db._target().add(collectionPrefix + "/" + collection, d, false);
+        await db._target().add(collectionPrefix + "/" + collection, { p: d }, false);
     }
 }
