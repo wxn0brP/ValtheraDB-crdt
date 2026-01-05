@@ -2,7 +2,7 @@ import { collectionPrefix } from "./static";
 import { ValtheraCRDT } from "./types";
 
 async function getIds(db: ValtheraCRDT, collection: string) {
-    const data = await db.find(collection, {}, {}, {}, { select: ["_id"] });
+    const data = await db.find(collection, {}, {}, { select: ["_id"] });
     return data.map((d: any) => d._id);
 }
 
@@ -17,6 +17,6 @@ export async function sync(my: ValtheraCRDT, other: ValtheraCRDT, collection: st
     for (const data of getData) {
         await my._target().add(crdtCol, data, false);
     }
-    
+
     if (rebuild) await my.rebuild(collection);
 }
