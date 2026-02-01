@@ -12,6 +12,11 @@
         "type": "git",
         "url": "https://github.com/wxn0brP/ValtheraDB-crdt.git"
     },
+    "keywords": [
+        "valthera",
+        "valtheradb",
+        "vdb-adapter"
+    ],
     "scripts": {
         "build": "tsc && tsc-alias"
     },
