@@ -1,10 +1,11 @@
-import { ValtheraCompatible } from "@wxn0brp/db-core";
+import { ValtheraClass, ValtheraCompatible } from "@wxn0brp/db-core";
+import { VQuery } from "@wxn0brp/db-core/types/query";
+import { VEE } from "@wxn0brp/event-emitter";
 import { rebuild } from "./rebuild";
 import { makeSnapshot } from "./snapshot";
 import { collectionPrefix } from "./static";
 import { sync } from "./sync";
-import { ValtheraCRDT } from "./types";
-import { VEE } from "@wxn0brp/event-emitter";
+import { ValtheraCRDT, ValtheraCRDT_Proxy } from "./types";
 
 const proxyList = [
     "add",
@@ -16,21 +17,36 @@ const proxyList = [
     "toggleOne"
 ];
 
-async function processOperation(target: ValtheraCRDT, op: string, result: any, args: any[]) {
-    const collection = collectionPrefix + "/" + args[0];
+async function processOperation(target: ValtheraCRDT_Proxy, op: string, result: any, query: VQuery) {
+    const collection = collectionPrefix + "/" + query.collection;
     const opLow = op.toLowerCase();
 
     let res: { _id: string } = null;
-    if (opLow === "add") {
-        res = await target._target().add<any>(collection, { a: result }, true);
-    } else if (!opLow.includes("find") && !opLow.includes("collection")) {
-        res = await target._target().add<any>(collection, { d: args.slice(1), op }, true);
-    }
+    const db = target._target();
+
+    if (opLow === "add")
+        res = await db.add({
+            collection,
+            data: { a: result },
+            id_gen: true
+        });
+
+    else if (!opLow.includes("find") && !opLow.includes("collection"))
+        res = await db.add<any>({
+            collection,
+            data: {
+                d: query,
+                op
+            },
+            id_gen: true
+        });
 
     return res?._id || null;
 }
 
-export function createCrdtValthera(target: ValtheraCompatible): ValtheraCRDT {
+export function createCrdtValthera(target: ValtheraClass): ValtheraClass & ValtheraCRDT_Proxy;
+export function createCrdtValthera(target: ValtheraCompatible): ValtheraCompatible & ValtheraCRDT_Proxy;
+export function createCrdtValthera(target: ValtheraClass) {
     const proxy = new Proxy(target, {
         get(target, prop: string, receiver) {
             const original = Reflect.get(target, prop, receiver);
@@ -38,7 +54,7 @@ export function createCrdtValthera(target: ValtheraCompatible): ValtheraCRDT {
                 return async function (...args: any[]) {
                     const result = await original.apply(target, args);
 
-                    const opId = await processOperation(proxy, prop, result, args);
+                    const opId = await processOperation(proxy, prop, result, args[0]);
                     if ("emiter" in target && opId) {
                         const emiter = target.emiter as VEE;
                         if (emiter instanceof VEE) {
@@ -56,7 +72,7 @@ export function createCrdtValthera(target: ValtheraCompatible): ValtheraCRDT {
         set(target, prop: string, value, receiver) {
             return Reflect.set(target, prop, value, receiver);
         }
-    }) as ValtheraCRDT;
+    }) as any;
 
     proxy.rebuild = async (collection: string) => {
         return await rebuild(proxy, collection);

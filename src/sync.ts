@@ -2,7 +2,13 @@ import { collectionPrefix } from "./static";
 import { ValtheraCRDT } from "./types";
 
 async function getIds(db: ValtheraCRDT, collection: string) {
-    const data = await db.find(collection, {}, {}, { select: ["_id"] });
+    const data = await db.find({
+        collection,
+        search: {},
+        findOpts: {
+            select: ["_id"]
+        }
+    });
     return data.map((d: any) => d._id);
 }
 
@@ -13,9 +19,16 @@ export async function sync(my: ValtheraCRDT, other: ValtheraCRDT, collection: st
 
     const missing = otherIds.filter(id => !myIds.includes(id));
 
-    const getData = await other.find(crdtCol, { $in: { _id: missing } });
+    const getData = await other.find({
+        collection: crdtCol,
+        search: { $in: { _id: missing } }
+    });
     for (const data of getData) {
-        await my._target().add(crdtCol, data, false);
+        await my._target().add({
+            collection: crdtCol,
+            data,
+            id_gen: false
+        });
     }
 
     if (rebuild) await my.rebuild(collection);
