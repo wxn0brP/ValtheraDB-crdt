@@ -44,9 +44,7 @@ async function processOperation(target: ValtheraCRDT_Proxy, op: string, result: 
     return res?._id || null;
 }
 
-export function createCrdtValthera(target: ValtheraClass): ValtheraClass & ValtheraCRDT_Proxy;
-export function createCrdtValthera(target: ValtheraCompatible): ValtheraCompatible & ValtheraCRDT_Proxy;
-export function createCrdtValthera(target: ValtheraClass) {
+export function createCrdtValthera<T extends ValtheraCompatible>(target: T): T & ValtheraCRDT_Proxy {
     const proxy = new Proxy(target, {
         get(target, prop: string, receiver) {
             const original = Reflect.get(target, prop, receiver);
