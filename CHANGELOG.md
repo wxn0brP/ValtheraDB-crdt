@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/wxn0brP/ValtheraDB-crdt/compare/v0.0.6...v0.0.7) (2026-02-14)
+
+
+### Features
+
+* update core ([aceea43](https://github.com/wxn0brP/ValtheraDB-crdt/commit/aceea43ed14f2fda8f46b75d2a0eb897ecb446c0))
+* update types ([82709cd](https://github.com/wxn0brP/ValtheraDB-crdt/commit/82709cd83fdc6c9674b8508235d64da871fe9f7d))
+
 ### [0.0.6](https://github.com/wxn0brP/ValtheraDB-crdt/compare/v0.0.5...v0.0.6) (2026-02-01)
 
 ### [0.0.5](https://github.com/wxn0brP/ValtheraDB-crdt/compare/v0.0.4...v0.0.5) (2026-01-05)
