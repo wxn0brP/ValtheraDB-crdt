@@ -1,4 +1,4 @@
-import { ValtheraClass, ValtheraCompatible } from "@wxn0brp/db-core";
+import { ValtheraCompatible } from "@wxn0brp/db-core";
 import { VQuery } from "@wxn0brp/db-core/types/query";
 import { VEE } from "@wxn0brp/event-emitter";
 import { rebuild } from "./rebuild";
