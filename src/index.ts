@@ -25,7 +25,7 @@ async function processOperation(target: ValtheraCRDT_Proxy, op: string, result: 
     const db = target._target();
 
     if (opLow === "add")
-        res = await db.add({
+        res = await db.add<any>({
             collection,
             data: { a: result },
             id_gen: true
