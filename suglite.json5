@@ -1,10 +1,6 @@
 {
-    cmd: "tsc && tsc-alias && bun run test.ts",
+    cmd: "tsc && tsc-alias && bun run src/test.ts",
     watch: [
         "src",
-    ],
-    restart_cmd: "clear",
-    events: {
-        rs: "clear",
-    },
+    ]
 }
