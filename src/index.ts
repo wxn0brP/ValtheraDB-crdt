@@ -1,11 +1,13 @@
 import { ValtheraCompatible } from "@wxn0brp/db-core";
+import { Collection } from "@wxn0brp/db-core/helpers/collection";
+import { Data } from "@wxn0brp/db-core/types/data";
 import { VQuery } from "@wxn0brp/db-core/types/query";
 import { VEE } from "@wxn0brp/event-emitter";
 import { rebuild } from "./rebuild";
-import { makeSnapshot } from "./snapshot";
+import { compact } from "./snapshot";
 import { collectionPrefix } from "./static";
 import { sync } from "./sync";
-import { ValtheraCRDT, ValtheraCRDT_Proxy } from "./types";
+import { AddOperation, CollectionsSyncResult, MutationOp, SyncOpts, ValtheraCRDT, ValtheraCRDT_Proxy } from "./types";
 
 const proxyList = [
     "add",
@@ -18,21 +20,27 @@ const proxyList = [
 ];
 
 async function processOperation(target: ValtheraCRDT_Proxy, op: string, result: any, query: VQuery) {
+    if (!query?.collection || query.collection.startsWith(collectionPrefix + "/")) {
+        return null;
+    }
+
     const collection = collectionPrefix + "/" + query.collection;
     const opLow = op.toLowerCase();
 
-    let res: { _id: string } = null;
+    let res: Data = null;
     const db = target._target();
 
     if (opLow === "add")
-        res = await db.add<any>({
+        res = await db.add<AddOperation>({
             collection,
-            data: { a: result },
+            data: {
+                a: result
+            },
             id_gen: true
         });
 
     else if (!opLow.includes("find") && !opLow.includes("collection"))
-        res = await db.add<any>({
+        res = await db.add<MutationOp>({
             collection,
             data: {
                 d: query,
@@ -64,6 +72,10 @@ export function createCrdtValthera<T extends ValtheraCompatible>(target: T): T &
                 };
             }
 
+            if (original instanceof Collection) {
+                (original as any).db = proxy;
+            }
+
             return original;
         },
 
@@ -76,12 +88,12 @@ export function createCrdtValthera<T extends ValtheraCompatible>(target: T): T &
         return await rebuild(proxy, collection);
     }
 
-    proxy.sync = async (other: ValtheraCRDT, collection: string, rebuild = false) => {
-        return await sync(proxy, other, collection, rebuild);
+    proxy.sync = async (other: ValtheraCRDT, collection: string, options: SyncOpts = {}) => {
+        return await sync(proxy, other, collection, options);
     }
 
-    proxy.makeSnapshot = async (collection: string) => {
-        return await makeSnapshot(proxy, collection);
+    proxy.compact = async (collection: string) => {
+        return await compact(proxy, collection);
     }
 
     proxy._target = () => target;
@@ -97,4 +109,21 @@ export function createCrdtValthera<T extends ValtheraCompatible>(target: T): T &
  */
 export async function reverseSync(my: ValtheraCRDT, other: ValtheraCRDT, collection: string) {
     return await sync(other, my, collection);
+}
+
+export async function syncBoth(
+    dbA: ValtheraCRDT,
+    dbB: ValtheraCRDT,
+    collection: string,
+    options: boolean | SyncOpts = false
+): Promise<CollectionsSyncResult> {
+    const first = await dbA.sync(dbB, collection, options);
+    const second = await dbB.sync(dbA, collection, options);
+
+    return {
+        collections: [first, second],
+        copied: first.copied + second.copied,
+        changed: first.changed || second.changed,
+        rebuild: first.rebuild || second.rebuild
+    };
 }

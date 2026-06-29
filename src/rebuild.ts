@@ -29,7 +29,11 @@ export async function rebuild(db: ValtheraCRDT, collection: string) {
                 id_gen: false
             });
         } else if (op.d) {
-            await _db.c(collection)[op.op](...op.d);
+            if (Array.isArray(op.d)) {
+                await _db.c(collection)[op.op](...op.d);
+            } else {
+                await _db[op.op](op.d);
+            }
         }
     }
 }

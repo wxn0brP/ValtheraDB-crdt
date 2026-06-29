@@ -1,7 +1,7 @@
 import { collectionPrefix } from "./static";
 import { ValtheraCRDT } from "./types";
 
-export async function makeSnapshot(db: ValtheraCRDT, collection: string) {
+export async function compact(db: ValtheraCRDT, collection: string) {
     const data = await db.find({ collection, search: {} });
     await db.removeCollection(collectionPrefix + "/" + collection);
     await db._target().updateOneOrAdd({

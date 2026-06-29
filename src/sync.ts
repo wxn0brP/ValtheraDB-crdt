@@ -1,5 +1,5 @@
 import { collectionPrefix } from "./static";
-import { ValtheraCRDT } from "./types";
+import { SyncOpts, SyncResult, ValtheraCRDT } from "./types";
 
 async function getIds(db: ValtheraCRDT, collection: string) {
     const data = await db.find({
@@ -12,12 +12,23 @@ async function getIds(db: ValtheraCRDT, collection: string) {
     return data.map((d: any) => d._id);
 }
 
-export async function sync(my: ValtheraCRDT, other: ValtheraCRDT, collection: string, rebuild = false) {
+export async function sync(my: ValtheraCRDT, other: ValtheraCRDT, collection: string, opts: SyncOpts = {}): Promise<SyncResult> {
     const crdtCol = collectionPrefix + "/" + collection;
     const myIds = await getIds(my, crdtCol);
     const otherIds = await getIds(other, crdtCol);
+    const myIdSet = new Set(myIds);
 
-    const missing = otherIds.filter(id => !myIds.includes(id));
+    const missing = otherIds.filter(id => !myIdSet.has(id));
+
+    if (missing.length === 0) {
+        if (opts.rebuild) await my.rebuild(collection);
+        return {
+            collection,
+            copied: 0,
+            changed: false,
+            rebuild: opts.rebuild
+        };
+    }
 
     const getData = await other.find({
         collection: crdtCol,
@@ -31,5 +42,12 @@ export async function sync(my: ValtheraCRDT, other: ValtheraCRDT, collection: st
         });
     }
 
-    if (rebuild) await my.rebuild(collection);
+    if (opts.rebuild) await my.rebuild(collection);
+
+    return {
+        collection,
+        copied: getData.length,
+        changed: getData.length > 0,
+        rebuild: opts.rebuild
+    };
 }
