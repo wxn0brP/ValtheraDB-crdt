@@ -1,28 +1,249 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@wxn0brp/db-crdt</title><meta name="description" content="Documentation for @wxn0brp/db-crdt"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">@wxn0brp/db-crdt</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>@wxn0brp/db-crdt</h1></div><div class="tsd-panel tsd-typography"><h1 id="wxn0brpdb-crdt" class="tsd-anchor-link">@wxn0brp/db-crdt<a href="#wxn0brpdb-crdt" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
-<p>CRDT integration for @wxn0brp/db-core.</p>
-<p>This library provides a CRDT (Conflict-free Replicated Data Type) implementation on top of the <code>@wxn0brp/db-core</code> library. It allows you to have eventually consistent data in a distributed environment.</p>
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@wxn0brp/db-crdt</title><meta name="description" content="Documentation for @wxn0brp/db-crdt"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="index.html" class="title">@wxn0brp/db-crdt</a>
+<div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<h1>@wxn0brp/db-crdt</h1></div>
+<div class="tsd-panel tsd-typography"><h1 id="wxn0brpdb-crdt" class="tsd-anchor-link">@wxn0brp/db-crdt<a href="#wxn0brpdb-crdt" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
+<p>CRDT plugin for <a href="https://github.com/wxn0brP/ValtheraDB-core">@wxn0brp/db-core</a>.</p>
+<p>Provides <strong>Conflict-free Replicated Data Type</strong> support — every mutation is logged
+and can be replayed, enabling eventually consistent data across distributed
+ValtheraDB instances.</p>
 <h2 id="installation" class="tsd-anchor-link">Installation<a href="#installation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <pre><code class="bash"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">i</span><span class="hl-1"> </span><span class="hl-2">@wxn0brp/db-crdt</span>
 </code><button type="button">Copy</button></pre>
 
-<h2 id="usage" class="tsd-anchor-link">Usage<a href="#usage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<pre><code class="typescript"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-4">createCrdtValthera</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&quot;@wxn0brp/db-crdt&quot;</span><span class="hl-1">;</span><br/><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-4">Valthera</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&quot;@wxn0brp/db&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">db</span><span class="hl-1"> = </span><span class="hl-0">createCrdtValthera</span><span class="hl-1">(</span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Valthera</span><span class="hl-1">(</span><span class="hl-2">&quot;dir&quot;</span><span class="hl-1">));</span><br/><br/><span class="hl-7">// All operations are now CRDT-enabled</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-4">db</span><span class="hl-1">.</span><span class="hl-0">add</span><span class="hl-1">(</span><span class="hl-2">&quot;my-collection&quot;</span><span class="hl-1">, { </span><span class="hl-4">name:</span><span class="hl-1"> </span><span class="hl-2">&quot;John Doe&quot;</span><span class="hl-1"> });</span>
+<p>Requires <code>@wxn0brp/db-core</code> as a peer dependency.</p>
+<h2 id="quick-start" class="tsd-anchor-link">Quick Start<a href="#quick-start" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<h3 id="1-plugin" class="tsd-anchor-link">1. Plugin<a href="#1-plugin" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-4">createMemoryValthera</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&quot;@wxn0brp/db-core&quot;</span><span class="hl-1">;</span><br/><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-4">createCrdtPlugin</span><span class="hl-1">, </span><span class="hl-4">syncBoth</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&quot;@wxn0brp/db-crdt&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">dbA</span><span class="hl-1"> = </span><span class="hl-0">createMemoryValthera</span><span class="hl-1">({ </span><span class="hl-4">users:</span><span class="hl-1"> [] });</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">dbB</span><span class="hl-1"> = </span><span class="hl-0">createMemoryValthera</span><span class="hl-1">({ </span><span class="hl-4">users:</span><span class="hl-1"> [] });</span><br/><br/><span class="hl-4">dbA</span><span class="hl-1">.</span><span class="hl-0">plugin</span><span class="hl-1">(</span><span class="hl-0">createCrdtPlugin</span><span class="hl-1">());</span><br/><span class="hl-4">dbB</span><span class="hl-1">.</span><span class="hl-0">plugin</span><span class="hl-1">(</span><span class="hl-0">createCrdtPlugin</span><span class="hl-1">());</span><br/><br/><span class="hl-3">await</span><span class="hl-1"> (</span><span class="hl-4">dbA</span><span class="hl-1"> </span><span class="hl-3">as</span><span class="hl-1"> </span><span class="hl-7">any</span><span class="hl-1">).</span><span class="hl-4">users</span><span class="hl-1">.</span><span class="hl-0">add</span><span class="hl-1">({ </span><span class="hl-4">name:</span><span class="hl-1"> </span><span class="hl-2">&quot;Alice&quot;</span><span class="hl-1"> });</span><br/><span class="hl-3">await</span><span class="hl-1"> (</span><span class="hl-4">dbB</span><span class="hl-1"> </span><span class="hl-3">as</span><span class="hl-1"> </span><span class="hl-7">any</span><span class="hl-1">).</span><span class="hl-4">users</span><span class="hl-1">.</span><span class="hl-0">add</span><span class="hl-1">({ </span><span class="hl-4">name:</span><span class="hl-1"> </span><span class="hl-2">&quot;Bob&quot;</span><span class="hl-1"> });</span><br/><br/><span class="hl-8">// Sync both ways</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">syncBoth</span><span class="hl-1">(</span><span class="hl-4">dbA</span><span class="hl-1">, </span><span class="hl-4">dbB</span><span class="hl-1">, </span><span class="hl-2">&quot;users&quot;</span><span class="hl-1">, { </span><span class="hl-4">rebuild:</span><span class="hl-1"> </span><span class="hl-5">true</span><span class="hl-1"> });</span><br/><br/><span class="hl-4">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-3">await</span><span class="hl-1"> (</span><span class="hl-4">dbA</span><span class="hl-1"> </span><span class="hl-3">as</span><span class="hl-1"> </span><span class="hl-7">any</span><span class="hl-1">).</span><span class="hl-4">users</span><span class="hl-1">.</span><span class="hl-0">find</span><span class="hl-1">());</span><br/><span class="hl-8">// [{ name: &quot;Alice&quot;, … }, { name: &quot;Bob&quot;, … }]</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="2-crdtdb-wrapper-recommended" class="tsd-anchor-link">2. CrdtDb wrapper (recommended)<a href="#2-crdtdb-wrapper-recommended" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-4">createMemoryValthera</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&quot;@wxn0brp/db-core&quot;</span><span class="hl-1">;</span><br/><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-4">createCrdtPlugin</span><span class="hl-1">, </span><span class="hl-4">crdtDb</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&quot;@wxn0brp/db-crdt&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">db</span><span class="hl-1"> = </span><span class="hl-0">createMemoryValthera</span><span class="hl-1">({ </span><span class="hl-4">posts:</span><span class="hl-1"> [] });</span><br/><span class="hl-4">db</span><span class="hl-1">.</span><span class="hl-0">plugin</span><span class="hl-1">(</span><span class="hl-0">createCrdtPlugin</span><span class="hl-1">());</span><br/><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">c</span><span class="hl-1"> = </span><span class="hl-0">crdtDb</span><span class="hl-1">(</span><span class="hl-4">db</span><span class="hl-1">);</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-4">c</span><span class="hl-1">.</span><span class="hl-4">db</span><span class="hl-1">.</span><span class="hl-4">posts</span><span class="hl-1">.</span><span class="hl-0">add</span><span class="hl-1">({ </span><span class="hl-4">title:</span><span class="hl-1"> </span><span class="hl-2">&quot;Hello&quot;</span><span class="hl-1"> });</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-4">c</span><span class="hl-1">.</span><span class="hl-4">db</span><span class="hl-1">.</span><span class="hl-4">posts</span><span class="hl-1">.</span><span class="hl-0">add</span><span class="hl-1">({ </span><span class="hl-4">title:</span><span class="hl-1"> </span><span class="hl-2">&quot;World&quot;</span><span class="hl-1"> });</span><br/><br/><span class="hl-8">// Compact log to snapshots</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-4">c</span><span class="hl-1">.</span><span class="hl-0">compact</span><span class="hl-1">(</span><span class="hl-2">&quot;posts&quot;</span><span class="hl-1">);</span><br/><br/><span class="hl-8">// Rebuild collection from log</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-4">c</span><span class="hl-1">.</span><span class="hl-0">rebuild</span><span class="hl-1">(</span><span class="hl-2">&quot;posts&quot;</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="3-sync-between-two-databases" class="tsd-anchor-link">3. Sync between two databases<a href="#3-sync-between-two-databases" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-4">createCrdtPlugin</span><span class="hl-1">, </span><span class="hl-4">crdtDb</span><span class="hl-1">, </span><span class="hl-4">CrdtDb</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&quot;@wxn0brp/db-crdt&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-8">// Both instances must have the plugin registered</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">c1</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">CrdtDb</span><span class="hl-1">(</span><span class="hl-4">db1</span><span class="hl-1">);</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">c2</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">CrdtDb</span><span class="hl-1">(</span><span class="hl-4">db2</span><span class="hl-1">);</span><br/><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-4">c1</span><span class="hl-1">.</span><span class="hl-0">syncBoth</span><span class="hl-1">(</span><span class="hl-4">c2</span><span class="hl-1">, </span><span class="hl-2">&quot;users&quot;</span><span class="hl-1">, { </span><span class="hl-4">rebuild:</span><span class="hl-1"> </span><span class="hl-5">true</span><span class="hl-1"> });</span><br/><br/><span class="hl-8">// One-direction sync</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-4">c1</span><span class="hl-1">.</span><span class="hl-0">syncTo</span><span class="hl-1">(</span><span class="hl-4">db2</span><span class="hl-1">, </span><span class="hl-2">&quot;users&quot;</span><span class="hl-1">);</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-4">c2</span><span class="hl-1">.</span><span class="hl-0">syncFrom</span><span class="hl-1">(</span><span class="hl-4">c1</span><span class="hl-1">, </span><span class="hl-2">&quot;users&quot;</span><span class="hl-1">);</span>
 </code><button type="button">Copy</button></pre>
 
 <h2 id="api" class="tsd-anchor-link">API<a href="#api" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<h3 id="_" class="tsd-anchor-link"><code>createCrdtValthera(target: ValtheraCompatible): ValtheraCRDT</code><a href="#_" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<p>This is the main function that wraps a any <code>ValtheraCompatible</code> instance and returns a <code>ValtheraCRDT</code> instance.</p>
-<h3 id="_-1" class="tsd-anchor-link"><code>ValtheraCRDT</code><a href="#_-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<p>The <code>ValtheraCRDT</code> interface extends the <code>ValtheraCompatible</code> interface and adds the following methods:</p>
-<ul>
-<li><code>rebuild(collection: string): Promise&lt;void&gt;</code>: Rebuilds a collection from its operation log.</li>
-<li><code>sync(other: ValtheraCRDT, collection: string, rebuild?: boolean): Promise&lt;void&gt;</code>: Syncs a collection from another <code>ValtheraCRDT</code> instance.</li>
-<li><code>makeSnapshot(collection: string): Promise&lt;void&gt;</code>: Creates a snapshot of a collection, effectively replacing the operation log with the current state of the data.</li>
-</ul>
-<h3 id="_-2" class="tsd-anchor-link"><code>reverseSync(my: ValtheraCRDT, other: ValtheraCRDT, collection: string)</code><a href="#_-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<p>Sync a collection from <code>my</code> to <code>other</code>.</p>
+<h3 id="plugin" class="tsd-anchor-link">Plugin<a href="#plugin" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<h4 id="_" class="tsd-anchor-link"><code>createCrdtPlugin(opts?)</code><a href="#_" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4>
+<p>Creates a ValtheraDB plugin that intercepts mutations (<code>add</code>, <code>update</code>,
+<code>updateOne</code>, <code>updateOneOrAdd</code>, <code>remove</code>, <code>removeOne</code>, <code>toggleOne</code>) and writes
+each operation into a hidden CRDT log collection (<code>__vcrdt__/&lt;collection&gt;</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>prefix</code></td>
+<td><code>string</code></td>
+<td><code>&quot;__vcrdt__&quot;</code></td>
+<td>Prefix for internal log collections.</td>
+</tr>
+<tr>
+<td><code>exclude</code></td>
+<td><code>string[]</code></td>
+<td><code>[]</code></td>
+<td>Collection names to skip (not tracked).</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="typescript"><span class="hl-0">createCrdtPlugin</span><span class="hl-1">({ </span><span class="hl-4">prefix:</span><span class="hl-1"> </span><span class="hl-2">&quot;__mycrdt__&quot;</span><span class="hl-1">, </span><span class="hl-4">exclude:</span><span class="hl-1"> [</span><span class="hl-2">&quot;audit_logs&quot;</span><span class="hl-1">] })</span>
+</code><button type="button">Copy</button></pre>
+
+<hr>
+<h3 id="crdtdb" class="tsd-anchor-link">CrdtDb<a href="#crdtdb" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>A convenience wrapper that groups a <code>ValtheraClass</code> instance with its CRDT
+prefix and exposes high-level methods.</p>
+<h4 id="_-1" class="tsd-anchor-link"><code>crdtDb(db: ValtheraClass, prefix?: string): CrdtDb</code><a href="#_-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4>
+<p>Factory function. Equivalent to <code>new CrdtDb(db, prefix)</code>.</p>
+<h4 id="properties" class="tsd-anchor-link">Properties<a href="#properties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>db</code></td>
+<td><code>ValtheraClass</code></td>
+<td>The underlying database instance.</td>
+</tr>
+<tr>
+<td><code>logPrefix</code></td>
+<td><code>string</code></td>
+<td>The configured CRDT log prefix.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="methods" class="tsd-anchor-link">Methods<a href="#methods" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>logCollection(name)</code></td>
+<td>Returns the internal log collection name (<code>&lt;prefix&gt;/&lt;name&gt;</code>).</td>
+</tr>
+<tr>
+<td><code>rebuild(name)</code></td>
+<td>Rebuilds a collection from its operation log.</td>
+</tr>
+<tr>
+<td><code>compact(name)</code></td>
+<td>Replaces the operation log with a snapshot of the current data.</td>
+</tr>
+<tr>
+<td><code>syncFrom(other, name, opts?)</code></td>
+<td>Pulls missing log entries from <code>other</code> into <code>this</code>.</td>
+</tr>
+<tr>
+<td><code>syncTo(other, name, opts?)</code></td>
+<td>Pushes missing log entries from <code>this</code> to <code>other</code>.</td>
+</tr>
+<tr>
+<td><code>syncBoth(other, name, opts?)</code></td>
+<td>Bidirectional sync — calls <code>syncTo</code> then <code>syncFrom</code>.</td>
+</tr>
+<tr>
+<td><code>getLog(name)</code></td>
+<td>Returns the raw CRDT log entries for a collection.</td>
+</tr>
+<tr>
+<td><code>getLogLength(name)</code></td>
+<td>Returns the number of entries in the log.</td>
+</tr>
+</tbody>
+</table>
+<p><code>other</code> can be a <code>ValtheraClass</code> or another <code>CrdtDb</code> instance.</p>
+<hr>
+<h3 id="low-level-functions" class="tsd-anchor-link">Low-level functions<a href="#low-level-functions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>All accept an optional <code>prefix</code> parameter (defaults to <code>&quot;__vcrdt__&quot;</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rebuild(db, collection, prefix?)</code></td>
+<td>Rebuilds <code>collection</code> from its CRDT log.</td>
+</tr>
+<tr>
+<td><code>compact(db, collection, prefix?)</code></td>
+<td>Snapshots current data into the log.</td>
+</tr>
+<tr>
+<td><code>sync(my, other, collection, opts?, prefix?)</code></td>
+<td>One-way sync (pull missing log entries into <code>my</code>).</td>
+</tr>
+<tr>
+<td><code>syncBoth(a, b, collection, opts?)</code></td>
+<td>Two-way sync.</td>
+</tr>
+<tr>
+<td><code>reverseSync(my, other, collection)</code></td>
+<td>Shorthand for <code>sync(other, my, collection)</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>opts</code> can be a boolean (<code>true</code> = rebuild after sync) or <code>{ rebuild: boolean }</code>.</p>
+<hr>
+<h3 id="syncopts" class="tsd-anchor-link">SyncOpts<a href="#syncopts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-5">interface</span><span class="hl-1"> </span><span class="hl-7">SyncOpts</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-4">rebuild</span><span class="hl-1">?: </span><span class="hl-7">boolean</span><span class="hl-1">; </span><span class="hl-8">// rebuild the target collection after syncing</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="syncresult" class="tsd-anchor-link">SyncResult<a href="#syncresult" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-5">interface</span><span class="hl-1"> </span><span class="hl-7">SyncResult</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-4">collection</span><span class="hl-1">: </span><span class="hl-7">string</span><span class="hl-1">;</span><br/><span class="hl-1">    </span><span class="hl-4">copied</span><span class="hl-1">: </span><span class="hl-7">number</span><span class="hl-1">;    </span><span class="hl-8">// number of log entries copied</span><br/><span class="hl-1">    </span><span class="hl-4">changed</span><span class="hl-1">: </span><span class="hl-7">boolean</span><span class="hl-1">;</span><br/><span class="hl-1">    </span><span class="hl-4">rebuild</span><span class="hl-1">: </span><span class="hl-7">boolean</span><span class="hl-1">;</span><br/><span class="hl-1">}</span><br/><br/><span class="hl-5">interface</span><span class="hl-1"> </span><span class="hl-7">CollectionsSyncResult</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-4">collections</span><span class="hl-1">: </span><span class="hl-7">SyncResult</span><span class="hl-1">[];</span><br/><span class="hl-1">    </span><span class="hl-4">copied</span><span class="hl-1">: </span><span class="hl-7">number</span><span class="hl-1">;</span><br/><span class="hl-1">    </span><span class="hl-4">changed</span><span class="hl-1">: </span><span class="hl-7">boolean</span><span class="hl-1">;</span><br/><span class="hl-1">    </span><span class="hl-4">rebuild</span><span class="hl-1">: </span><span class="hl-7">boolean</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="advanced-usage" class="tsd-anchor-link">Advanced Usage<a href="#advanced-usage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<h3 id="custom-prefix" class="tsd-anchor-link">Custom prefix<a href="#custom-prefix" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-4">db</span><span class="hl-1">.</span><span class="hl-0">plugin</span><span class="hl-1">(</span><span class="hl-0">createCrdtPlugin</span><span class="hl-1">({ </span><span class="hl-4">prefix:</span><span class="hl-1"> </span><span class="hl-2">&quot;_crdt&quot;</span><span class="hl-1"> }));</span><br/><span class="hl-8">// log collections will be named _crdt/&lt;name&gt;</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="excluding-collections" class="tsd-anchor-link">Excluding collections<a href="#excluding-collections" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-4">db</span><span class="hl-1">.</span><span class="hl-0">plugin</span><span class="hl-1">(</span><span class="hl-0">createCrdtPlugin</span><span class="hl-1">({ </span><span class="hl-4">exclude:</span><span class="hl-1"> [</span><span class="hl-2">&quot;sessions&quot;</span><span class="hl-1">, </span><span class="hl-2">&quot;metrics&quot;</span><span class="hl-1">] }));</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="compact-rebuild-workflow" class="tsd-anchor-link">Compact + Rebuild workflow<a href="#compact-rebuild-workflow" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-8">// 1. Compact shrinks the log to a snapshot</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">compact</span><span class="hl-1">(</span><span class="hl-4">db</span><span class="hl-1">, </span><span class="hl-2">&quot;users&quot;</span><span class="hl-1">);</span><br/><br/><span class="hl-8">// 2. The log now only contains snapshot entries (no individual ops)</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">log</span><span class="hl-1"> = </span><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-4">db</span><span class="hl-1">.</span><span class="hl-0">find</span><span class="hl-1">({ </span><span class="hl-4">collection:</span><span class="hl-1"> </span><span class="hl-2">&quot;__vcrdt__/users&quot;</span><span class="hl-1">, </span><span class="hl-4">search:</span><span class="hl-1"> {} });</span><br/><span class="hl-8">// every entry has a `p` (primary data) property</span><br/><br/><span class="hl-8">// 3. Rebuild restores the collection from the log</span><br/><span class="hl-3">await</span><span class="hl-1"> </span><span class="hl-0">rebuild</span><span class="hl-1">(</span><span class="hl-4">db</span><span class="hl-1">, </span><span class="hl-2">&quot;users&quot;</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
 <h2 id="license" class="tsd-anchor-link">License<a href="#license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p>This project is licensed under the MIT License.</p>
-<h2 id="contributing" class="tsd-anchor-link">Contributing<a href="#contributing" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p>Contributions are welcome!</p>
-</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#wxn0brpdb-crdt"><span>@wxn0brp/db-<wbr/>crdt</span></a><ul><li><a href="#installation"><span>Installation</span></a></li><li><a href="#usage"><span>Usage</span></a></li><li><a href="#api"><span>API</span></a></li><li><ul><li><a href="#_"><span></span></a></li><li><a href="#_-1"><span></span></a></li><li><a href="#_-2"><span></span></a></li></ul></li><li><a href="#license"><span>License</span></a></li><li><a href="#contributing"><span>Contributing</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">@wxn0brp/db-crdt</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
+<p>MIT</p>
+</div></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details"><a href="#wxn0brpdb-crdt"><span>@wxn0brp/db-<wbr/>crdt</span></a>
+<ul>
+<li><a href="#installation"><span>Installation</span></a></li>
+<li><a href="#quick-start"><span>Quick <wbr/>Start</span></a></li>
+<li>
+<ul>
+<li><a href="#1-plugin"><span>1. <wbr/>Plugin</span></a></li>
+<li><a href="#2-crdtdb-wrapper-recommended"><span>2. <wbr/>Crdt<wbr/>Db wrapper (recommended)</span></a></li>
+<li><a href="#3-sync-between-two-databases"><span>3. <wbr/>Sync between two databases</span></a></li></ul></li>
+<li><a href="#api"><span>API</span></a></li>
+<li>
+<ul>
+<li><a href="#plugin"><span>Plugin</span></a></li>
+<li>
+<ul>
+<li><a href="#_"><span></span></a></li></ul></li>
+<li><a href="#crdtdb"><span>Crdt<wbr/>Db</span></a></li>
+<li>
+<ul>
+<li><a href="#_-1"><span></span></a></li>
+<li><a href="#properties"><span>Properties</span></a></li>
+<li><a href="#methods"><span>Methods</span></a></li></ul></li>
+<li><a href="#low-level-functions"><span>Low-<wbr/>level functions</span></a></li>
+<li><a href="#syncopts"><span>Sync<wbr/>Opts</span></a></li>
+<li><a href="#syncresult"><span>Sync<wbr/>Result</span></a></li></ul></li>
+<li><a href="#advanced-usage"><span>Advanced <wbr/>Usage</span></a></li>
+<li>
+<ul>
+<li><a href="#custom-prefix"><span>Custom prefix</span></a></li>
+<li><a href="#excluding-collections"><span>Excluding collections</span></a></li>
+<li><a href="#compact-rebuild-workflow"><span>Compact + <wbr/>Rebuild workflow</span></a></li></ul></li>
+<li><a href="#license"><span>License</span></a></li></ul></div></details></div>
+<div class="site-menu">
+<nav class="tsd-navigation"><a href="modules.html">@wxn0brp/db-crdt</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
+<div class="overlay"></div></body></html>
