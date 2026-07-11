@@ -1,129 +1,82 @@
-import { ValtheraCompatible } from "@wxn0brp/db-core";
-import { Collection } from "@wxn0brp/db-core/helpers/collection";
-import { Data } from "@wxn0brp/db-core/types/data";
-import { VQuery } from "@wxn0brp/db-core/types/query";
-import { VEE } from "@wxn0brp/event-emitter";
+import type { ValtheraClass } from "@wxn0brp/db-core";
+import { ValtheraPlugin } from "@wxn0brp/db-core/types/plugin";
 import { rebuild } from "./rebuild";
 import { compact } from "./snapshot";
 import { collectionPrefix } from "./static";
 import { sync } from "./sync";
-import { AddOperation, CollectionsSyncResult, MutationOp, SyncOpts, ValtheraCRDT, ValtheraCRDT_Proxy } from "./types";
+import {
+    CRDT_OPS,
+    CollectionsSyncResult,
+    CrdtMutationEntry,
+    CrdtPluginOpts,
+    SyncOpts,
+} from "./types";
 
-const proxyList = [
-    "add",
-    "update",
-    "updateOne",
-    "updateOneOrAdd",
-    "remove",
-    "removeOne",
-    "toggleOne"
-];
+export * from "./types";
+export { compact, rebuild, sync };
 
-async function processOperation(target: ValtheraCRDT_Proxy, op: string, result: any, query: VQuery) {
-    if (!query?.collection || query.collection.startsWith(collectionPrefix + "/")) {
-        return null;
-    }
-
-    const collection = collectionPrefix + "/" + query.collection;
-    const opLow = op.toLowerCase();
-
-    let res: Data = null;
-    const db = target._target();
-
-    if (opLow === "add")
-        res = await db.add<AddOperation>({
-            collection,
-            data: {
-                a: result
-            },
-            id_gen: true
-        });
-
-    else if (!opLow.includes("find") && !opLow.includes("collection"))
-        res = await db.add<MutationOp>({
-            collection,
-            data: {
-                d: query,
-                op
-            },
-            id_gen: true
-        });
-
-    return res?._id || null;
+function stripControl(query: any): any {
+    if (!query || typeof query !== "object") return query;
+    const { control, ...rest } = query;
+    return rest;
 }
 
-export function createCrdtValthera<T extends ValtheraCompatible>(target: T): T & ValtheraCRDT_Proxy {
-    const proxy = new Proxy(target, {
-        get(target, prop: string, receiver) {
-            const original = Reflect.get(target, prop, receiver);
-            if (proxyList.includes(prop) && typeof original === "function") {
-                return async function (...args: any[]) {
-                    const result = await original.apply(target, args);
+export function createCrdtPlugin(opts: CrdtPluginOpts = {}): ValtheraPlugin {
+    const prefix = opts.prefix ?? collectionPrefix;
+    const exclude = new Set(opts.exclude ?? []);
+    let _db: ValtheraClass;
 
-                    const opId = await processOperation(proxy, prop, result, args[0]);
-                    if ("emiter" in target && opId) {
-                        const emiter = target.emiter as VEE;
-                        if (emiter instanceof VEE) {
-                            emiter.emit("crdt", opId);
-                        }
-                    }
-
-                    return result;
-                };
-            }
-
-            if (original instanceof Collection) {
-                (original as any).db = proxy;
-            }
-
-            return original;
+    return {
+        name: "crdt",
+        init(db: ValtheraClass) {
+            _db = db;
         },
+        async execute(ctx) {
+            const result = await ctx.next();
 
-        set(target, prop: string, value, receiver) {
-            return Reflect.set(target, prop, value, receiver);
-        }
-    }) as any;
+            if (!CRDT_OPS.has(ctx.op)) return result;
+            if (!ctx.query?.collection) return result;
 
-    proxy.rebuild = async (collection: string) => {
-        return await rebuild(proxy, collection);
-    }
+            const col = ctx.query.collection;
+            if (col.startsWith(prefix + "/") || exclude.has(col)) return result;
 
-    proxy.sync = async (other: ValtheraCRDT, collection: string, options: SyncOpts = {}) => {
-        return await sync(proxy, other, collection, options);
-    }
+            const logCollection = prefix + "/" + col;
+            const data = ctx.op === "add"
+                ? { a: result }
+                : { d: stripControl(ctx.query), op: ctx.op } as CrdtMutationEntry;
 
-    proxy.compact = async (collection: string) => {
-        return await compact(proxy, collection);
-    }
+            await _db.adapter.add({
+                collection: logCollection,
+                data,
+                id_gen: true,
+            });
 
-    proxy._target = () => target;
-
-    return proxy;
-}
-
-/**
- * Sync a collection from my to other.
- * @param my The target database that should be synced.
- * @param other The source database that should be synced from.
- * @param collection The collection to sync.
- */
-export async function reverseSync(my: ValtheraCRDT, other: ValtheraCRDT, collection: string) {
-    return await sync(other, my, collection);
+            return result;
+        },
+    };
 }
 
 export async function syncBoth(
-    dbA: ValtheraCRDT,
-    dbB: ValtheraCRDT,
+    dbA: ValtheraClass,
+    dbB: ValtheraClass,
     collection: string,
-    options: boolean | SyncOpts = false
+    options: boolean | SyncOpts = false,
 ): Promise<CollectionsSyncResult> {
-    const first = await dbA.sync(dbB, collection, options);
-    const second = await dbB.sync(dbA, collection, options);
+    const first = await sync(dbA, dbB, collection, options);
+    const second = await sync(dbB, dbA, collection, options);
 
     return {
         collections: [first, second],
         copied: first.copied + second.copied,
         changed: first.changed || second.changed,
-        rebuild: first.rebuild || second.rebuild
+        rebuild: first.rebuild || second.rebuild,
     };
+}
+
+export async function reverseSync(
+    my: ValtheraClass,
+    other: ValtheraClass,
+    collection: string,
+) {
+    return await sync(other, my, collection);
 }

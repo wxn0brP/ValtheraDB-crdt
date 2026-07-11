@@ -1,39 +1,44 @@
+import type { ValtheraClass } from "@wxn0brp/db-core";
 import { sortByIds } from "@wxn0brp/db-core";
 import { collectionPrefix } from "./static";
-import { ValtheraCRDT } from "./types";
 
-export async function rebuild(db: ValtheraCRDT, collection: string) {
+export async function rebuild(
+    db: ValtheraClass,
+    collection: string,
+    prefix: string = collectionPrefix,
+) {
+    const logCol = prefix + "/" + collection;
     const operations = await db.find<any>({
-        collection: collectionPrefix + "/" + collection,
-        search: {}
+        collection: logCol,
+        search: {},
     });
+
     await db.removeCollection(collection);
 
-    const _db = db._target();
-
-    const primaryDataOperations = operations.filter(op => op.p);
-    for (const op of primaryDataOperations) {
-        await _db.add({
+    const adapter = db.adapter;
+    const primaryOps = operations.filter((op: any) => op.p);
+    for (const op of primaryOps) {
+        await adapter.add({
             collection,
             data: op.p,
-            id_gen: false
+            id_gen: false,
         });
     }
 
-    const modificationOperations = sortByIds(operations.filter(op => !op.p));
-    for (const op of modificationOperations) {
+    const mutationOps = sortByIds(operations.filter((op: any) => !op.p));
+    for (const op of mutationOps) {
         if (op.a) {
-            await _db.add({
+            await adapter.add({
                 collection,
                 data: op.a,
-                id_gen: false
+                id_gen: false,
             });
         } else if (op.d) {
-            if (Array.isArray(op.d)) {
-                await _db.c(collection)[op.op](...op.d);
-            } else {
-                await _db[op.op](op.d);
-            }
+            const { op: method, d: query } = op;
+            await (adapter as any)[method]({
+                collection,
+                ...query,
+            });
         }
     }
 }

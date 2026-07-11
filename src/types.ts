@@ -1,22 +1,36 @@
-import { ValtheraCompatible } from "@wxn0brp/db-core"
+import type { VQuery } from "@wxn0brp/db-core/types/query";
 
-export type CrdtOperation<T = any> =
-    | AddOperation<T>
-    | MutationOp
-    | CompactOp<T>;
+export type CrdtOp =
+    | "add"
+    | "update"
+    | "updateOne"
+    | "updateOneOrAdd"
+    | "remove"
+    | "removeOne"
+    | "toggleOne";
 
-export interface AddOperation<T = any> {
+export const CRDT_OPS: ReadonlySet<string> = new Set<string>([
+    "add", "update", "updateOne", "updateOneOrAdd",
+    "remove", "removeOne", "toggleOne",
+]);
+
+export interface CrdtAddEntry<T = any> {
     a: T;
 }
 
-export interface MutationOp {
-    d: any;
-    op: string;
+export interface CrdtMutationEntry {
+    d: Omit<VQuery, "control">;
+    op: CrdtOp;
 }
 
-export interface CompactOp<T = any> {
+export interface CrdtCompactEntry<T = any> {
     p: T;
 }
+
+export type CrdtLogEntry<T = any> =
+    | CrdtAddEntry<T>
+    | CrdtMutationEntry
+    | CrdtCompactEntry<T>;
 
 export interface SyncOpts {
     rebuild?: boolean;
@@ -36,15 +50,7 @@ export interface CollectionsSyncResult {
     rebuild: boolean;
 }
 
-export interface ValtheraCRDT_Proxy {
-    _target: () => ValtheraCompatible;
-    rebuild: (collection: string) => Promise<void>;
-    sync: (
-        other: ValtheraCompatible & ValtheraCRDT_Proxy,
-        collection: string,
-        options?: boolean | SyncOpts
-    ) => Promise<SyncResult>;
-    compact: (collection: string) => Promise<void>;
+export interface CrdtPluginOpts {
+    prefix?: string;
+    exclude?: string[];
 }
-
-export type ValtheraCRDT = ValtheraCompatible & ValtheraCRDT_Proxy;

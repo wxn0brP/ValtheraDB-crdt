@@ -1,53 +1,62 @@
+import type { ValtheraClass } from "@wxn0brp/db-core";
+import { rebuild } from "./rebuild";
 import { collectionPrefix } from "./static";
-import { SyncOpts, SyncResult, ValtheraCRDT } from "./types";
+import type { SyncOpts, SyncResult } from "./types";
 
-async function getIds(db: ValtheraCRDT, collection: string) {
+async function getLogIds(db: ValtheraClass, logCol: string) {
     const data = await db.find({
-        collection,
+        collection: logCol,
         search: {},
-        findOpts: {
-            select: ["_id"]
-        }
+        findOpts: { select: ["_id"] },
     });
     return data.map((d: any) => d._id);
 }
 
-export async function sync(my: ValtheraCRDT, other: ValtheraCRDT, collection: string, opts: SyncOpts = {}): Promise<SyncResult> {
-    const crdtCol = collectionPrefix + "/" + collection;
-    const myIds = await getIds(my, crdtCol);
-    const otherIds = await getIds(other, crdtCol);
+export async function sync(
+    my: ValtheraClass,
+    other: ValtheraClass,
+    collection: string,
+    opts: boolean | SyncOpts = {},
+    prefix: string = collectionPrefix,
+): Promise<SyncResult> {
+    const _opts: SyncOpts = typeof opts === "boolean" ? { rebuild: opts } : opts;
+    const logCol = prefix + "/" + collection;
+
+    const myIds = await getLogIds(my, logCol);
+    const otherIds = await getLogIds(other, logCol);
     const myIdSet = new Set(myIds);
 
     const missing = otherIds.filter(id => !myIdSet.has(id));
 
     if (missing.length === 0) {
-        if (opts.rebuild) await my.rebuild(collection);
+        if (_opts.rebuild) await rebuild(my, collection, prefix);
         return {
             collection,
             copied: 0,
             changed: false,
-            rebuild: opts.rebuild
+            rebuild: !!_opts.rebuild,
         };
     }
 
     const getData = await other.find({
-        collection: crdtCol,
-        search: { $in: { _id: missing } }
+        collection: logCol,
+        search: { $in: { _id: missing } },
     });
+
     for (const data of getData) {
-        await my._target().add({
-            collection: crdtCol,
+        await my.adapter.add({
+            collection: logCol,
             data,
-            id_gen: false
+            id_gen: false,
         });
     }
 
-    if (opts.rebuild) await my.rebuild(collection);
+    if (_opts.rebuild) await rebuild(my, collection, prefix);
 
     return {
         collection,
         copied: getData.length,
         changed: getData.length > 0,
-        rebuild: opts.rebuild
+        rebuild: !!_opts.rebuild,
     };
 }
