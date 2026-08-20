@@ -1,0 +1,1 @@
+export const collectionPrefix = "__vcrdt__";

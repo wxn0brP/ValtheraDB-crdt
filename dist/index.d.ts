@@ -1,0 +1,11 @@
+import type { ValtheraClass } from "@wxn0brp/db-core";
+import { ValtheraPlugin } from "@wxn0brp/db-core/types/plugin";
+import { rebuild } from "./rebuild.js";
+import { compact } from "./snapshot.js";
+import { sync } from "./sync.js";
+import { CollectionsSyncResult, CrdtPluginOpts, SyncOpts } from "./types.js";
+export * from "./types.js";
+export { compact, rebuild, sync };
+export declare function createCrdtPlugin(opts?: CrdtPluginOpts): ValtheraPlugin;
+export declare function syncBoth(dbA: ValtheraClass, dbB: ValtheraClass, collection: string, options?: boolean | SyncOpts): Promise<CollectionsSyncResult>;
+export declare function reverseSync(my: ValtheraClass, other: ValtheraClass, collection: string): Promise<import("./types.js").SyncResult>;
