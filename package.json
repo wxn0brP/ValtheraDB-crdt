@@ -1,6 +1,6 @@
 {
     "name": "@wxn0brp/db-crdt",
-    "version": "0.110.0",
+    "version": "0.120.0",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "description": "CRDT integration for ValtheraDB",

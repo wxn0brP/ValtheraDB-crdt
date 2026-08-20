@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.120.0](https://github.com/wxn0brP/ValtheraDB-crdt/compare/v0.110.0...v0.120.0) (2026-08-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* rebuild crdt
+* improve
+
+### Features
+
+* improve ([3784648](https://github.com/wxn0brP/ValtheraDB-crdt/commit/378464818d3c0289964a6a8af8bde5676efee094))
+* rebuild crdt ([3e4a401](https://github.com/wxn0brP/ValtheraDB-crdt/commit/3e4a40177969465617d235e62766abc761611726))
+
 ## [0.110.0](https://github.com/wxn0brP/ValtheraDB-crdt/compare/v0.100.1...v0.110.0) (2026-05-21)
 
 ### [0.100.1](https://github.com/wxn0brP/ValtheraDB-crdt/compare/v0.100.0...v0.100.1) (2026-03-30)
