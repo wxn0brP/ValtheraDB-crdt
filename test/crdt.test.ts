@@ -6,8 +6,6 @@ import {
     sync,
     rebuild,
     compact,
-    crdtDb,
-    CrdtDb,
 } from "../src";
 
 interface User {
@@ -352,75 +350,6 @@ describe("crdt plugin - custom prefix", () => {
 
         const defaultLog = await db.find({ collection: "__vcrdt__/users", search: {} });
         expect(defaultLog).toHaveLength(0);
-    });
-});
-
-describe("CrdtDb helper", () => {
-    test("16. crdtDb wraps db and provides sync/rebuild/compact", async () => {
-        const db1 = createDb();
-        const db2 = createDb();
-        const cdb1 = crdtDb(db1);
-        const cdb2 = crdtDb(db2);
-
-        expect(cdb1).toBeInstanceOf(CrdtDb);
-        expect(cdb1.logPrefix).toBe("__vcrdt__");
-        expect(cdb1.logCollection("users")).toBe("__vcrdt__/users");
-
-        await db1.users.add({ name: "Alice" });
-        expect(await cdb1.getLogLength("users")).toBe(1);
-
-        await cdb2.syncFrom(cdb1, "users", { rebuild: true });
-        expect(await db2.users.find()).toHaveLength(1);
-    });
-
-    test("17. CrdtDb.syncBoth works with CrdtDb instances", async () => {
-        const db1 = createDb();
-        const db2 = createDb();
-        const cdb1 = crdtDb(db1);
-        const cdb2 = crdtDb(db2);
-
-        await db1.users.add({ name: "Alice" });
-        await db2.users.add({ name: "Bob" });
-
-        const result = await cdb1.syncBoth(cdb2, "users", { rebuild: true });
-        expect(result.copied).toBe(2);
-        expect(result.changed).toBe(true);
-
-        expect(await db1.users.find()).toHaveLength(2);
-        expect(await db2.users.find()).toHaveLength(2);
-    });
-
-    test("18. CrdtDb works with raw ValtheraClass too", async () => {
-        const db1 = createDb();
-        const db2 = createDb();
-        const cdb1 = crdtDb(db1);
-
-        await db1.users.add({ name: "Alice" });
-
-        const result = await cdb1.syncTo(db2, "users", { rebuild: true });
-        expect(result.copied).toBe(1);
-        expect(await db2.users.find()).toHaveLength(1);
-    });
-
-    test("19. CrdtDb compact and rebuild", async () => {
-        const db = createDb();
-        const cdb = crdtDb(db);
-
-        const alice = await db.users.add({ name: "Alice" });
-        await db.users.add({ name: "Bob" });
-        await db.users.updateOne({ _id: alice._id }, { age: 22 });
-
-        expect(await cdb.getLogLength("users")).toBe(3);
-
-        await cdb.compact("users");
-        expect(await cdb.getLogLength("users")).toBe(2);
-
-        await cdb.rebuild("users");
-        const users = await db.users.find();
-        expect(users).toEqual([
-            expect.objectContaining({ name: "Alice", age: 22 }),
-            expect.objectContaining({ name: "Bob" }),
-        ]);
     });
 });
 
